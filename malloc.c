@@ -1,5 +1,42 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <assert.h>
+#include <unistd.h>
+#include "struct.h"
+
 p_block first_element = NULL; //apunta al primer bloc reservat
 p_block last_element  = NULL; //apunta al darrer element de la llista
+
+p_block cercar_bloc_lliure(size_t size) {
+    p_block current = first_element;
+
+    while (current && !(current->free && current->size >= size))
+        current = current->next;
+
+    return current;
+}
+
+p_block demanar_espai(size_t size)
+{
+    p_block block;
+
+    block = sbrk(0);
+
+    if (sbrk(META_SIZE + size) == (void *) -1)
+        return (NULL);
+
+    block->size = size;
+    block->next = NULL;
+    block->free = 0;
+
+    if (last_element)
+      last_element->next = block;
+
+    last_element = block;
+
+    return block;
+}
 
 void *malloc(size_t size)
 {
@@ -34,7 +71,7 @@ void *malloc(size_t size)
 }
 
 //Ha de posar el valor 'free' a 1
-void free(void *ptr){
+/*void free(void *ptr){
     if(!ptr) //si es NULL
         return; //es ignora la llamada
     struct p_block* current = (struct p_block*)ptr -1;
@@ -54,3 +91,4 @@ void calloc(size_t nelem, size_t elsiza){
      //en cas contrari reservar espai per un bloc y usar la funcion memcpy per
      //copiar el contigut d'un bloc en un altre
  }
+*/
