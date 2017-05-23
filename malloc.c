@@ -38,6 +38,10 @@ p_block demanar_espai(size_t size)
     return block;
 }
 
+
+
+
+
 void *malloc(size_t size)
 {
     void *p;
@@ -70,25 +74,55 @@ void *malloc(size_t size)
     return (p + META_SIZE);
 }
 
+
+
+
+
+
 //Ha de posar el valor 'free' a 1
-/*void free(void *ptr){
+void free(void *ptr){
     if(!ptr) //si es NULL
         return; //es ignora la llamada
     struct p_block* current = (struct p_block*)ptr -1;
     current->free = 1;
 }
 
+
+
+
 //permet reservar varis elements de memoria i els deixa inicialitzats a zero
 void calloc(size_t nelem, size_t elsiza){
-
+    size_t total = nelem * elsiza;
+    void *p = malloc(total);
+    if (!p) return NULL;
+    return memset(p, 0, total);
 }
 
+
+
+
 //reajusta la mida d'un bloc de momemoria obtingut amb malloc a una nova mida
- void *realloc(void *ptr, size_t size){
-     if(!ptr) //si es null el punter actua como una malloc normal i corrent
-        return malloc(size);
-     //si la mida que demananen es suficient amb el bloc que ja te reservat no fa res
-     //en cas contrari reservar espai per un bloc y usar la funcion memcpy per
-     //copiar el contigut d'un bloc en un altre
- }
-*/
+ void *realloc(void * ptr, size_t size){
+    void *new;
+
+    if (!ptr) {
+        new = malloc(size);
+        if (!new) { goto error; }
+    } else {
+        if (malloc_size(ptr) < size) {
+            new = malloc(size);
+            if (!new) { goto error; }
+
+            memcpy(new, ptr, malloc_size(ptr));
+
+            free(ptr);
+        } else {
+            new = ptr;
+        }
+    }
+
+    return new;
+error:
+    return NULL;
+}
+
