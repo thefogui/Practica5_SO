@@ -11,11 +11,21 @@ p_block last_element  = NULL; //apunta al darrer element de la llista
 
 p_block cercar_bloc_lliure(size_t size) {
     p_block current = first_element;
+	p_block best_fit;
 
-    while (current && !(current->free && current->size >= size))
+    while (current && !(current->free && current->size >= size)){
+	//Cuando encuentre el libre buscar el que tenga el espacio minimo y que quepa el block dema-
+	//nado... siempre comparando con el actual
         current = current->next;
-
-    return current;
+	
+	}
+	best_fit = current;
+	while(current != 0){
+		current = current->next;
+		if(current->size < best_fit->size && current->size >= size)
+			best_fit = current;
+	}
+    return best_fit;
 }
 
 p_block demanar_espai(size_t size)
