@@ -1,3 +1,9 @@
+/**
+* Autores Vitor Carvalho y Rocio Marquez
+*
+*
+**/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -11,21 +17,12 @@ p_block last_element  = NULL; //apunta al darrer element de la llista
 
 p_block cercar_bloc_lliure(size_t size) {
     p_block current = first_element;
-	p_block best_fit;
 
     while (current && !(current->free && current->size >= size)){
-	//Cuando encuentre el libre buscar el que tenga el espacio minimo y que quepa el block dema-
-	//nado... siempre comparando con el actual
         current = current->next;
-	
 	}
-	best_fit = current;
-	while(current != 0){
-		current = current->next;
-		if(current->size < best_fit->size && current->size >= size)
-			best_fit = current;
-	}
-    return best_fit;
+
+    return current;
 }
 
 p_block demanar_espai(size_t size)
@@ -84,7 +81,6 @@ void *malloc(size_t size)
 
 //Ha de posar el valor 'free' a 1
 void free(void *ptr){
-	printf("Soc a la crida de free\n");
     if(!ptr) //si es NULL
         return; //es ignora la llamada
     p_block current = (p_block)ptr -1;//cast del puntero void a puntero p_block
@@ -95,7 +91,7 @@ void free(void *ptr){
 //permet reservar varis elements de memoria i els deixa inicialitzats a zero
 void *calloc(size_t nelem, size_t elsiza){
     size_t total = nelem * elsiza;
-    p_block p = malloc(total); 
+    p_block p = malloc(total);
     if (!p) //si dona error retorna null
 		return NULL;
     return memset(p, 0, total); // per inicialitzar el bloc de memòria a zero.
@@ -108,13 +104,13 @@ void *calloc(size_t nelem, size_t elsiza){
     if (!ptr) //si el null actua como un malloc normal y corriente
         return malloc(size);
     else {
-        if (sizeof(ptr) < size) { //si el tamaño del puntero es menor 
+        if (sizeof(ptr) < size) { //si el tamaño del puntero es menor
             new = malloc(size); //se hace un bloc mas grande
-            if (!new) 
+            if (!new)
 				return NULL; //si dona error retorna nulll
             memcpy(new, ptr, sizeof(ptr)); //copies n characters from memory area str2 to memory area str1.
 			//copiar el contingut d’un bloc en un altre.
-            free(ptr); //libera el espacio del puntero 
+            free(ptr); //libera el espacio del puntero
         } else //sino retorna el block
             return new;
     }
